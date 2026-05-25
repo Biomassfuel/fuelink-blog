@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.zspt.blogback.Mapper.BlogFrontMapper">
+
+
+    <select id="getAllLabel" resultType="cn.zspt.blogback.vo.LabelResultVO">
+        select * from label where status = 1
+    </select>
+    <select id="getAllBlog" resultType="cn.zspt.blogback.entity.BlogEntity">
+        SELECT
+        articles.id,
+        articles.title,
+        articles.summary,
+        articles.content,
+        articles.imageUrl,
+        articles.isTop,
+        articles.status,
+        articles.createTime,
+        articles.updateTime,
+        articles.view_count,
+        (SELECT GROUP_CONCAT(l.name SEPARATOR ', ')
+        FROM label l,
+        JSON_TABLE(articles.tags, '$[*]' COLUMNS (tag_id VARCHAR(50) PATH '$')) AS tag_list
+        WHERE l.id = CAST(tag_list.tag_id AS UNSIGNED)
+        ) AS tags
+        FROM articles
+        <where>
+            <if test="titleSearch != null and titleSearch!=''">
+                AND articles.title LIKE CONCAT('%', #{titleSearch}, '%')
+            </if>
+            <if test="tagId != null">
+                AND JSON_CONTAINS(articles.tags, CAST(#{tagId} AS CHAR))
+            </if>
+        And status=1
+
+
+        </where>
+        order by isTop desc, articles.createTime desc
+    </select>
+    <select id="getBlogById" resultType="cn.zspt.blogback.entity.BlogEntity">
+        SELECT
+        articles.id,
+        articles.title,
+        articles.summary,
+        articles.content,
+        articles.imageUrl,
+        articles.isTop,
+        articles.status,
+        articles.createTime,
+        articles.updateTime,
+        articles.view_count,
+        (SELECT GROUP_CONCAT(l.name SEPARATOR ', ')
+        FROM label l,
+        JSON_TABLE(articles.tags, '$[*]' COLUMNS (tag_id VARCHAR(50) PATH '$')) AS tag_list
+        WHERE l.id = CAST(tag_list.tag_id AS UNSIGNED)
+        ) AS tags
+        FROM articles
+       where articles.id=#{id}
+    </select>
+    <select id="getAllBlogNoPage" resultType="cn.zspt.blogback.entity.BlogEntity">
+        SELECT
+            articles.id,
+            articles.title,
+            articles.summary,
+            articles.content,
+            articles.imageUrl,
+            articles.isTop,
+            articles.status,
+            articles.createTime,
+            articles.updateTime,
+            articles.view_count,
+            (SELECT GROUP_CONCAT(l.name SEPARATOR ', ')
+             FROM label l,
+                  JSON_TABLE(articles.tags, '$[*]' COLUMNS (tag_id VARCHAR(50) PATH '$')) AS tag_list
+             WHERE l.id = CAST(tag_list.tag_id AS UNSIGNED)
+            ) AS tags
+        FROM articles
+        order by createTime desc
+    </select>
+</mapper>

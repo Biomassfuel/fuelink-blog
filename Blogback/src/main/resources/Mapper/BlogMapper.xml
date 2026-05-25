@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.zspt.blogback.Mapper.BlogMapper">
+
+    <insert id="addBlog">
+        insert into articles(title, summary, content, imageUrl, isTop, status, tags, createTime, updateTime, view_count)
+        values (#{title}, #{summary}, #{content}, #{imageUrl}, #{isTop}, #{status}, #{tags}, #{createTime}, #{updateTime}, #{viewCount})
+    </insert>
+    <update id="updateBlog">
+        update articles
+        <set>
+            <if test="title != null and title != ''">
+                title = #{title},
+            </if>
+            <if test="summary != null and summary != ''">
+                summary = #{summary},
+            </if>
+            <if test="content != null and content != ''">
+                content = #{content},
+            </if>
+            <if test="imageUrl != null and imageUrl != ''">
+                imageUrl = #{imageUrl},
+            </if>
+            <if test="tags != null and tags != ''">
+                tags = #{tags},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+    <select id="getBlog" resultType="cn.zspt.blogback.entity.BlogEntity">
+        SELECT
+            articles.id,
+            articles.title,
+            articles.summary,
+            articles.content,
+            articles.imageUrl,
+            articles.isTop,
+            articles.status,
+            articles.createTime,
+            articles.updateTime,
+            articles.view_count,
+            (SELECT GROUP_CONCAT(l.name SEPARATOR ', ')
+             FROM label l,
+                  JSON_TABLE(articles.tags, '$[*]' COLUMNS (tag_id VARCHAR(50) PATH '$')) AS tag_list
+             WHERE l.id = CAST(tag_list.tag_id AS UNSIGNED)
+            ) AS tags
+        FROM articles
+        <where>
+            <if test="name != null and name!=''">
+                AND articles.title LIKE CONCAT('%', #{name}, '%')
+            </if>
+            <if test="status != null">
+                AND articles.status = #{status}
+            </if>
+            <if test="begin != null and end !=null">
+        and articles.createTime BETWEEN #{begin} AND #{end}
+        </if>
+
+        </where>
+    order by articles.updateTime desc
+    </select>
+</mapper>

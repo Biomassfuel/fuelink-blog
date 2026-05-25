@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="cn.zspt.blogback.Mapper.LabelMapper">
+    <update id="updateLabelTotal">
+        UPDATE label
+            JOIN (
+                SELECT
+                    label.id AS label_id,
+                    COUNT(articles.id) AS cnt
+                FROM label
+                         LEFT JOIN articles
+                                   ON JSON_CONTAINS(tags, CAST(label.id AS CHAR))
+                GROUP BY label.id
+            ) AS counts
+            ON label.id = counts.label_id
+        SET label.total = counts.cnt
+        WHERE true
+    </update>
+
+
+    <select id="getLabel" resultType="cn.zspt.blogback.entity.LabelEntity">
+        select * from label 
+        <where>
+            <if test="name != null and name != ''">
+                and name like concat('%',#{name},'%')
+            </if>
+            <if test="status != null">
+                and status = #{status}
+            </if>
+            <if test="date != null">
+                and date >= #{date}
+            </if>
+        </where>
+        order by date desc
+    </select>
+</mapper>

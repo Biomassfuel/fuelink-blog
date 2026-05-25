@@ -1,0 +1,21 @@
+package cn.zspt.blogback.dto;
+
+import lombok.Data;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Data
+public class BlogQueryParam {
+    private Integer page =1;
+    private Integer pageSize =10;
+    private String name;
+    private Integer status;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate begin;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private LocalDate end;
+}

@@ -1,0 +1,31 @@
+# Environment and local secrets
+.env
+.env.*
+!.env.example
+Blogback/src/main/resources/application-*.yml
+!Blogback/src/main/resources/application.example.yml
+
+# Logs
+logs/
+*.log
+
+# Node
+node_modules/
+dist/
+dist-ssr/
+coverage/
+
+# Java / Maven
+target/
+build/
+*.class
+
+# IDE and OS
+.DS_Store
+Thumbs.db
+**/.idea/
+**/.vscode/*
+!**/.vscode/extensions.json
+*.iml
+*.ipr
+*.iws
