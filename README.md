@@ -128,7 +128,7 @@ blog:
 BlogFront-end/src/config/siteConfig.js
 ```
 
-后台管理端首页的默认头像、每日一句接口和头像上传地址集中在：
+后台管理端首页的每日一句接口集中在：
 
 ```text
 BlogFront/src/config/adminConfig.js
