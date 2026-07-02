@@ -329,8 +329,9 @@ const goBack = () => {
   font-weight: 600;
   margin-bottom: 5px;
   text-align: center;
-  /* 顶部留出返回键的高度，标题落在其下方，长标题也不会与返回键重叠 */
-  margin-top: 40px;
+  margin-top: 8px;
+  /* 左右留出返回键宽度，居中标题文字不会伸到左上角按钮下方 */
+  padding: 0 96px;
   line-height: 1.5;
   letter-spacing: 1px;
 
@@ -379,8 +380,9 @@ const goBack = () => {
   .title {
     font-size: 28px;
     line-height: 1.4;
-    /* 移动端返回键在正常流中，标题无需额外留白 */
+    /* 移动端返回键在正常流中，标题无需额外留白，占满宽度 */
     margin-top: 10px;
+    padding: 0;
   }
   
   .time {
