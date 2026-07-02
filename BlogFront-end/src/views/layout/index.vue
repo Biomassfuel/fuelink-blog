@@ -1,8 +1,9 @@
 <script setup>
 import ElementPlus from 'element-plus'
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 let router = useRouter()
+const route = useRoute()
 import { labelQueryAllApi, queryPageApi } from '@/api/home'
 import siteConfig from '@/config/siteConfig'
 
@@ -167,13 +168,49 @@ const handleGlobalKeydown = (event) => {
 }
 // 切换明亮模式
 const code = ref(1)
-const toggleSunMode = () => {
+const applySunMode = () => {
   code.value = 1 - code.value
   document.documentElement.classList.toggle('sun-mode');
   const appElement = document.getElementById('app');
   if (appElement) {
     appElement.classList.toggle('sun-mode');
   }
+}
+
+const toggleSunMode = (event) => {
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+  // 不支持 View Transitions 或用户偏好减少动效时，直接切换
+  if (!document.startViewTransition || prefersReduced) {
+    applySunMode()
+    return
+  }
+
+  // 以点击位置为圆心，计算能覆盖整屏的半径
+  const x = event?.clientX ?? window.innerWidth / 2
+  const y = event?.clientY ?? window.innerHeight / 2
+  const endRadius = Math.hypot(
+    Math.max(x, window.innerWidth - x),
+    Math.max(y, window.innerHeight - y)
+  )
+
+  const transition = document.startViewTransition(() => applySunMode())
+
+  transition.ready.then(() => {
+    document.documentElement.animate(
+      {
+        clipPath: [
+          `circle(0px at ${x}px ${y}px)`,
+          `circle(${endRadius}px at ${x}px ${y}px)`
+        ]
+      },
+      {
+        duration: 500,
+        easing: 'ease-in-out',
+        pseudoElement: '::view-transition-new(root)'
+      }
+    )
+  })
 }
 
 
@@ -327,7 +364,7 @@ const handleSentenceClick = () => {
             
               <span class="rightHeaderItem" @click="openSponsorModal">赞助</span>
               <span class="rightHeaderItemSecond" :class="{ 'scrolled': isScrolled }">|</span>
-              <el-icon class="rightHeaderItem" @click="toggleSunMode">
+              <el-icon class="rightHeaderItem" @click="toggleSunMode($event)">
                 <!-- <Sunny /> <Moon /> -->
                 <el-icon v-if="code" class="el-icon--sun">
                   <sunny />
@@ -349,7 +386,7 @@ const handleSentenceClick = () => {
               <span @click="() => { router.push('/todayReport'); toggleMobileMenu(); }" class="mobile-menu-item">今日日报</span>
               <span class="mobile-menu-item" @click="() => { openSponsorModal(); toggleMobileMenu(); }">赞助</span>
               <span class="mobile-menu-item divider">|</span>
-              <el-icon class="mobile-menu-item" @click="() => { toggleSunMode(); toggleMobileMenu(); }">
+              <el-icon class="mobile-menu-item" @click="(e) => { toggleSunMode(e); toggleMobileMenu(); }">
                 <el-icon v-if="code" class="el-icon--sun">
                   <sunny />
                 </el-icon>
@@ -450,7 +487,11 @@ const handleSentenceClick = () => {
           </el-aside>
           <el-main class="content">
             <img class="snake" src="@/assets/snake-Light.svg"></img>
-            <router-view class="contentRouter"></router-view>
+            <router-view v-slot="{ Component }">
+              <transition name="page-slide" mode="out-in">
+                <component :is="Component" :key="route.path" />
+              </transition>
+            </router-view>
           </el-main>
         </el-container>
       </el-main>
@@ -483,6 +524,37 @@ const handleSentenceClick = () => {
 
 </template>
 <style scoped>
+/* 页面切换过渡：轻微上移 + 淡入，贴合项目卡片风格 */
+.page-slide-enter-active {
+  transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+
+.page-slide-leave-active {
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+.page-slide-enter-from {
+  opacity: 0;
+  transform: translateY(18px);
+}
+
+.page-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+
+/* 尊重用户的"减少动效"系统偏好 */
+@media (prefers-reduced-motion: reduce) {
+  .page-slide-enter-active,
+  .page-slide-leave-active {
+    transition: opacity 0.2s ease;
+  }
+  .page-slide-enter-from,
+  .page-slide-leave-to {
+    transform: none;
+  }
+}
+
 /* footer */
 .footer {
   height: 65px;

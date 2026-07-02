@@ -1,5 +1,6 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import PageLoadingBar from '@/components/PageLoadingBar.vue'
 
 const scrollbarRef = ref(null)
 const showBacktop = ref(false)
@@ -33,6 +34,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
+  <PageLoadingBar />
   <el-scrollbar height="100vh" ref="scrollbarRef" @scroll="handleScroll">
      <div id="app">
     <router-view></router-view> 
@@ -62,6 +64,20 @@ onBeforeUnmount(() => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+/* ===== 主题切换：从点击点扩散的圆形揭示（View Transitions API） ===== */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+/* 新视图（切换后的主题）在旧视图之上，用 clip-path 圆形展开 */
+::view-transition-new(root) {
+  z-index: 1;
+}
+::view-transition-old(root) {
+  z-index: 0;
 }
 
 .custom-backtop {

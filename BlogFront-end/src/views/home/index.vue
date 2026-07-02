@@ -109,6 +109,7 @@ const handleClick = (item) => {
 
 </script>
 <template>
+  <div class="home-list">
   <div v-for="item in BlogList" :key="item" class="contentRouter" @click="handleClick(item)">
     <div style="display: flex; flex-direction: column; width: 85%;">
        <div class="blog-title-container">
@@ -142,9 +143,46 @@ const handleClick = (item) => {
       :background="true" :pager-count="5" layout="prev, pager, next, jumper" :total="total"
       @current-change="handleCurrentChange" />
   </div>
-
+  </div>
 </template>
 <style scoped>
+/* 列表容器：卡片依次淡入，营造加载后逐条呈现的效果 */
+.home-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.home-list .contentRouter {
+  opacity: 0;
+  animation: card-fade-in 0.45s ease forwards;
+}
+
+/* 前几条依次延迟出现，形成瀑布感（超出部分立即显示，避免长列表等待） */
+.home-list .contentRouter:nth-child(1) { animation-delay: 0.02s; }
+.home-list .contentRouter:nth-child(2) { animation-delay: 0.07s; }
+.home-list .contentRouter:nth-child(3) { animation-delay: 0.12s; }
+.home-list .contentRouter:nth-child(4) { animation-delay: 0.17s; }
+.home-list .contentRouter:nth-child(5) { animation-delay: 0.22s; }
+.home-list .contentRouter:nth-child(6) { animation-delay: 0.27s; }
+.home-list .contentRouter:nth-child(7) { animation-delay: 0.32s; }
+
+/* 仅动画 opacity，避免 forwards 锁定 transform 影响卡片的 hover/按压位移 */
+@keyframes card-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-list .contentRouter {
+    opacity: 1;
+    animation: none;
+  }
+}
+
   .blog-title-container {
   display: flex;
   align-items: center;
@@ -291,9 +329,22 @@ const handleClick = (item) => {
     transform: translateX(25px);
     transition: transform 0.3s ease;
   }
-  
+
   .sun-mode .contentRouter:hover {
     background-color: rgba(255, 255, 255, 0.9);
+  }
+}
+
+/* 点击文章时的按压反馈，让跳转更有交互感 */
+.contentRouter:active {
+  transform: scale(0.985);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+@media (min-width: 769px) {
+  .contentRouter:active {
+    transform: translateX(25px) scale(0.985);
   }
 }
 
@@ -362,6 +413,7 @@ const handleClick = (item) => {
   flex-direction: row;
   justify-content: space-between;
   cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease;
 }
 
 /* 桌面端悬浮背景色变化 */
