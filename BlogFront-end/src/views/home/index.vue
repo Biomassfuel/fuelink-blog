@@ -12,11 +12,13 @@ const searchForm = ref({
 })
 watch(() => route.query.titleSearch, (newValue) => {
    searchForm.value.titleSearch = newValue || ''
+  currentPage.value = 1
   handleSearch()
 })
 //标签筛选
 watch(() => route.query.tagId, (newValue) => {
   searchForm.value.tagId = newValue || ''
+  currentPage.value = 1
   handleSearch()
 })
 const handleImageError = (event) => {
@@ -58,9 +60,13 @@ const handleReset = () => {
 //分页组件
 const pagination = ref({ currentPage: 1, pageSize: 10, total: 0 })
 
-//当前页码发生变化时触发
+//当前页码发生变化时触发：写入 URL，返回时可还原页码
 const handleCurrentChange = (page) => {
   currentPage.value = page
+  router.push({
+    path: '/',
+    query: { ...route.query, page }
+  })
   handleSearch()
 }
 
@@ -69,6 +75,8 @@ onMounted(() => {
   // 组件挂载时检查路由参数
   searchForm.value.titleSearch = route.query.titleSearch || ''
   searchForm.value.tagId = route.query.tagId || ''
+  // 还原页码（例如从文章详情返回第 2 页）
+  currentPage.value = Number(route.query.page) || 1
   handleSearch()
 });
 // 监听搜索框searchKeyword变化搜索
