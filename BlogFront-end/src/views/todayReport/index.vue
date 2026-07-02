@@ -5,22 +5,16 @@ import siteConfig from '@/config/siteConfig'
 const todayReport = ref('')
 const loadFailed = ref(false)
 
-const getTodayReport = async () => {
-  try {
-    loadFailed.value = false
-    const response = await fetch(siteConfig.todayReport.apiUrl)
-    const result = await response.json()
-    const imageUrl = result?.data?.url
+const getTodayReport = () => {
+  const today = new Date()
+  const year = today.getFullYear()
+  const month = String(today.getMonth() + 1).padStart(2, '0')
+  const day = String(today.getDate()).padStart(2, '0')
+  const date = `${year}${month}${day}`
+  const baseUrl = siteConfig.todayReport.apiUrl.replace(/\/?$/, '/')
 
-    if (!response.ok || !imageUrl) {
-      throw new Error('Today report image url is empty')
-    }
-
-    todayReport.value = imageUrl
-  } catch (error) {
-    todayReport.value = ''
-    loadFailed.value = true
-  }
+  todayReport.value = `${baseUrl}moyu_${date}.jpg`
+  loadFailed.value = false
 }
 
 const handleImageError = () => {

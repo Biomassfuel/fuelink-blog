@@ -260,11 +260,11 @@ const handleClick = (item) => {
   border-radius: 4px;
   box-shadow: none !important;
   outline: none !important;
+}
 
-  &:focus {
-    background-color: rgba(27, 27, 31, 0.7) !important;
-    border-color: rgba(255, 255, 255, 0.2) !important;
-  }
+.page ::v-deep(.el-pagination .el-pagination__jump input:focus) {
+  background-color: rgba(27, 27, 31, 0.7) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
 }
 
 .sun-mode .page ::v-deep(.el-pagination .el-pagination__jump .el-input__wrapper) {

@@ -1,12 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Layout from '@/views/layout/index.vue'
 import Home from '@/views/home/index.vue'
-import Anime from '@/views/anime/index.vue'
-import Archive from '@/views/archive/index.vue'
-import About from '@/views/about/index.vue'
-import FriendLink from '@/views/friendLink/index.vue'
-import Blog from '@/views/blog/index.vue'
-import TodayReport from '@/views/todayReport/index.vue'
 
 
 
@@ -23,23 +17,23 @@ const routes = [
       },
       {
         path: '/anime',
-        component: Anime
+        component: () => import('@/views/anime/index.vue')
       },
       {
         path: '/todayReport',
-        component: TodayReport
+        component: () => import('@/views/todayReport/index.vue')
       },
       {
         path: '/archive',
-        component: Archive
+        component: () => import('@/views/archive/index.vue')
       },
       {
         path: '/about',
-        component: About
+        component: () => import('@/views/about/index.vue')
       },
       {
         path: '/friendLink',
-        component: FriendLink
+        component: () => import('@/views/friendLink/index.vue')
       },
       {
         path: '/front/blog',

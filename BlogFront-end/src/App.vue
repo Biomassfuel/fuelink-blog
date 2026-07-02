@@ -115,13 +115,21 @@ html, body {
   height: 100% ;
   width: 100% ;
   /* overflow-x: hidden ; */
-  background-image: url('@/assets/bg.jpg');
+  background-color: #1b1b1f;
+  background-image: url('@/assets/bg-1280.webp');
   /* cover 背景图片铺满整个屏幕 */
   background-size: cover;
 
   background-attachment: fixed; /* 确保背景不随滚动移动 */
   
 }
+
+@media (min-width: 1440px) {
+  html, body {
+    background-image: url('@/assets/bg-2560.webp');
+  }
+}
+
 html::before {
   content: "";
   position: fixed;
@@ -156,10 +164,65 @@ html::before {
 /* 直接在App.vue中定义字体 */
 @font-face {
   font-family: 'LXGW WenKai Screen'; /* 与模板中使用的名称一致 */
-  src: url('@/assets/fonts/LXGWWenKaiScreen.ttf') format('truetype');
+  src: url('@/assets/fonts/LXGWWenKaiScreen-latin.woff2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
+  unicode-range: U+0000-00FF, U+0100-024F, U+2000-206F, U+20A0-20CF, U+2190-21FF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-symbols.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+3000-303F, U+FF00-FFEF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-3400.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+3400-4DBF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-4e00.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+4E00-5FFF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-6000.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+6000-7FFF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-8000.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+8000-9FFF;
+}
+
+@font-face {
+  font-family: 'LXGW WenKai Screen';
+  src: url('@/assets/fonts/LXGWWenKaiScreen-cjk-f900.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+F900-FAFF;
 }
 
 /* 全局应用字体 */
@@ -169,7 +232,7 @@ html::before {
 
 /* 或者只应用于特定元素 */
 body {
-  font-family: 'MyCustomFont', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-family: 'LXGW WenKai Screen', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-size: 16px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -178,7 +241,7 @@ body {
 
 /* 标题字体 */
 h1, h2, h3, h4, h5, h6 {
-  font-family: 'MyCustomFont', sans-serif;
+  font-family: 'LXGW WenKai Screen', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   font-weight: 700;
   line-height: 1.2;
 }

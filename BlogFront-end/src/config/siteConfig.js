@@ -1,46 +1,47 @@
 const siteConfig = {
-  siteName: 'Your Blog',
-  siteTitle: "Your Blog",
-  siteSubtitle: '- Write your own site slogan here',
-  ownerName: 'Your Name',
-  ownerBio: 'Write a short personal introduction here',
+  siteName: 'Biomass_Fuel',
+  siteTitle: "Biomass_Fuel's Blog",
+  siteSubtitle: '- 为学应尽毕生力，攀高须贵少年时',
+  ownerName: 'Biomass_Fuel',
+  ownerBio: '私はバンド楽しいっておもったこと、一度もない',
   copyrightYear: '2025',
-  repositoryUrl: 'https://github.com/your-name/your-repo',
+  repositoryUrl: 'https://github.com/Biomassfuel/Project_SSmVue',
   license: {
     name: 'CC BY-NC-SA 4.0',
     url: 'https://creativecommons.org/licenses/by-nc-sa/4.0/'
   },
   contact: {
-    qq: 'your_qq_number',
-    email: 'your_email@example.com'
+    qq: '2564797255',
+    email: '2564797255@qq.com'
   },
   socialLinks: {
-    bilibili: 'https://space.bilibili.com/your_id',
-    steam: 'https://steamcommunity.com/profiles/your_id/',
-    github: 'https://github.com/your-name'
+    bilibili: 'https://space.bilibili.com/488368588',
+    steam: 'https://steamcommunity.com/profiles/76561199061973651/',
+    github: 'https://github.com/Biomassfuel'
   },
   beian: {
-    icpText: 'your_icp_number',
+    icpText: '粤ICP备2026055601号-1',
     icpUrl: 'https://beian.miit.gov.cn/',
-    policeText: 'your_police_record_number',
-    policeUrl: 'https://beian.mps.gov.cn/#/query/webSearch?code=your_police_code',
+    policeText: '粤公网安备44051302000274号',
+    policeUrl: 'https://beian.mps.gov.cn/#/query/webSearch?code=44051302000274',
     policeIconUrl: 'https://beian.mps.gov.cn/web/assets/logo01.6189a29f.png'
   },
   friendLink: {
-    title: 'Your Blog',
-    avatarUrl: 'https://example.com/avatar.webp',
-    description: 'Write your site description here',
-    siteUrl: 'https://example.com/'
+    title: 'Biomass_Fuel',
+    avatarUrl: 'https://biomfuel.top/assets/a.e26bc03b.webp',
+    description: '私はバンド楽しいっておもったこと、一度もない',
+    siteUrl: 'https://biomfuel.top/'
   },
   about: {
     introLines: [
-      '欢迎来到我的小站！这里用于记录技术、生活和项目笔记。',
-      '你可以在 BlogFront-end/src/config/siteConfig.js 中替换这段介绍。',
-      '欢迎一起交流。'
+      '欢迎来到Biomass_Fuelの小破站！本站主要发布一些好玩的东西，偶尔记录一下自己的日常.',
+      '为什么要搭建博客呢？主要是发现学习中遇到的很多问题或知识，在事件结束后就忘记了，还是得记录下来比较好。然后就是我发现碎碎念发朋友圈不太合适，写在自己的博客里应该好一点，反正没人看 (●’◡’●).',
+      '还有就是，我发现搭博客写文档还是能激发一些学习的动力的.',
+      '欢迎一起交流唠嗑.'
     ]
   },
   bangumi: {
-    userId: 'your_bangumi_user_id',
+    userId: '1188983',
     apiBaseUrl: 'https://api.bgm.tv',
     subjectBaseUrl: 'https://bgm.tv/subject/',
     collectionsLimit: 100,
