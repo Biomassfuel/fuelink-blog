@@ -189,13 +189,16 @@ const goBack = () => {
 </template>
 <style scoped>
 
-/* 返回按钮 */
+/* 返回按钮：定位在卡片左上角，不占额外行高 */
 .back-btn {
+  position: absolute;
+  top: 12px;
+  left: 15px;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   gap: 4px;
   padding: 4px 12px;
-  margin-bottom: 8px;
   font-size: 14px;
   color: #a9b0b8;
   background-color: rgba(27, 27, 31, 0.7);
@@ -334,6 +337,7 @@ const goBack = () => {
 }
 
 .content {
+  position: relative;
   min-height: 1200px;
   margin-left: 8px;
   background-color: rgba(27, 27, 31, 0.7);
@@ -364,7 +368,13 @@ const goBack = () => {
     margin: 5px 8px 10px 8px;
     padding: 12px 15px 10px 15px;
   }
-  
+
+  /* 移动端标题左对齐，返回键恢复正常流以免与标题重叠 */
+  .back-btn {
+    position: static;
+    margin-bottom: 8px;
+  }
+
   .title {
     font-size: 28px;
     line-height: 1.4;
