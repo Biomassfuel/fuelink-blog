@@ -150,9 +150,22 @@ onMounted(() => {
   blogContent(BlogContentID)
   viewCountAdd(BlogContentID)
 })
+
+// 返回:有浏览历史则回到来源页（保留主页搜索结果/归档滚动位置），否则回主页
+const goBack = () => {
+  if (window.history.state && window.history.state.back) {
+    router.back()
+  } else {
+    router.push('/')
+  }
+}
 </script>
 <template>
   <div class="content">
+    <div class="back-btn" @click="goBack">
+      <el-icon><ArrowLeft /></el-icon>
+      <span>返回</span>
+    </div>
     <div class="title">{{ title }}</div>
     <div class="time">
       <el-icon class="icon"><Clock /></el-icon>
@@ -175,7 +188,45 @@ onMounted(() => {
   </div>
 </template>
 <style scoped>
-  
+
+/* 返回按钮 */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: #a9b0b8;
+  background-color: rgba(27, 27, 31, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  cursor: pointer;
+  user-select: none;
+  transition: color 0.3s ease, transform 0.3s ease, background-color 0.3s ease;
+}
+
+.back-btn:hover {
+  color: #409EFF;
+  transform: translateX(-3px);
+  background-color: rgba(27, 27, 31, 0.9);
+}
+
+.back-btn .el-icon {
+  margin: 0;
+}
+
+.sun-mode .back-btn {
+  color: #4a5568;
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.sun-mode .back-btn:hover {
+  color: #409EFF;
+  background-color: rgba(255, 255, 255, 0.9);
+}
+
   /* 明亮模式样式 */
 .sun-mode .time {
   font-size: 14px;
