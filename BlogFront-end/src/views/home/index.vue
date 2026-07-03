@@ -28,22 +28,29 @@ const handleImageError = (event) => {
 const currentPage = ref(1)
 const pageSize = ref(10)
 const total = ref(0)
+// 列表加载态：避免"先出分页、后出文章列表"的突兀感
+const loading = ref(false)
 
 const BlogList = ref([])
 
 
 
 const handleSearch = async () => {
-  const result = await allBlogQueryApi(
-    
-    searchForm.value.titleSearch,
-    searchForm.value.tagId,
-    currentPage.value,
-    pageSize.value
-  );
-  if (result.code) {
-    BlogList.value = result.data.row
-    total.value = result.data.total
+  loading.value = true
+  try {
+    const result = await allBlogQueryApi(
+
+      searchForm.value.titleSearch,
+      searchForm.value.tagId,
+      currentPage.value,
+      pageSize.value
+    );
+    if (result.code) {
+      BlogList.value = result.data.row
+      total.value = result.data.total
+    }
+  } finally {
+    loading.value = false
   }
 }
 
@@ -118,6 +125,14 @@ const handleClick = (item) => {
 </script>
 <template>
   <div class="home-list">
+  <!-- 加载态：列表与分页一起在加载完成后出现，避免"先分页后列表"的突兀 -->
+  <transition name="list-fade" mode="out-in">
+  <div v-if="loading" key="loading" class="home-loading">
+    <el-icon class="home-loading-icon"><Loading /></el-icon>
+    <span class="home-loading-text">加载中…</span>
+  </div>
+
+  <div v-else key="list" class="home-list-inner">
   <div v-for="item in BlogList" :key="item" class="contentRouter" @click="handleClick(item)">
     <div style="display: flex; flex-direction: column; width: 85%;">
        <div class="blog-title-container">
@@ -152,12 +167,72 @@ const handleClick = (item) => {
       @current-change="handleCurrentChange" />
   </div>
   </div>
+  </transition>
+  </div>
 </template>
 <style scoped>
 /* 列表容器：卡片依次淡入，营造加载后逐条呈现的效果 */
 .home-list {
   display: flex;
   flex-direction: column;
+}
+
+.home-list-inner {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== 加载态 ===== */
+.home-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 320px;
+  color: #a9b0b8;
+}
+
+.home-loading-icon {
+  font-size: 34px;
+  color: #409EFF;
+  animation: home-spin 0.9s linear infinite;
+}
+
+.home-loading-text {
+  font-size: 14px;
+  letter-spacing: 2px;
+}
+
+.sun-mode .home-loading {
+  color: #4a5568;
+}
+
+@keyframes home-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 加载态与列表之间的淡入淡出 */
+.list-fade-enter-active,
+.list-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.list-fade-enter-from,
+.list-fade-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-loading-icon {
+    animation-duration: 2.4s;
+  }
+  .list-fade-enter-active,
+  .list-fade-leave-active {
+    transition: none;
+  }
 }
 
 .home-list .contentRouter {
