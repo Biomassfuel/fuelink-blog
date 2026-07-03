@@ -4,6 +4,7 @@ import { onMounted, ref, watch, onBeforeUnmount } from 'vue'
 import { allBlogQueryApi } from '@/api/home'
 import {useRoute} from 'vue-router'
 import router from '../../router'
+import { blogListCache, makeListKey } from '@/composables/useBlogListCache'
 const route = useRoute()
 // 查询
 const searchForm = ref({
@@ -35,8 +36,9 @@ const BlogList = ref([])
 
 
 
-const handleSearch = async () => {
-  loading.value = true
+// silent=true 时不显示 spinner（用于返回命中缓存后的后台静默刷新）
+const handleSearch = async (silent = false) => {
+  if (!silent) loading.value = true
   try {
     const result = await allBlogQueryApi(
 
@@ -48,9 +50,13 @@ const handleSearch = async () => {
     if (result.code) {
       BlogList.value = result.data.row
       total.value = result.data.total
+      // 写入缓存，供下次从文章返回时秒显
+      blogListCache.key = makeListKey(searchForm.value.titleSearch, searchForm.value.tagId, currentPage.value)
+      blogListCache.list = result.data.row
+      blogListCache.total = result.data.total
     }
   } finally {
-    loading.value = false
+    if (!silent) loading.value = false
   }
 }
 
@@ -84,7 +90,17 @@ onMounted(() => {
   searchForm.value.tagId = route.query.tagId || ''
   // 还原页码（例如从文章详情返回第 2 页）
   currentPage.value = Number(route.query.page) || 1
-  handleSearch()
+
+  // 若返回到的正是刚才那一页：用缓存立即渲染（免转圈），随后后台静默刷新
+  const key = makeListKey(searchForm.value.titleSearch, searchForm.value.tagId, currentPage.value)
+  if (blogListCache.key === key && blogListCache.list.length) {
+    BlogList.value = blogListCache.list
+    total.value = blogListCache.total
+    loading.value = false
+    handleSearch(true) // 静默刷新
+  } else {
+    handleSearch()
+  }
 });
 // 监听搜索框searchKeyword变化搜索
 // watch(() => searchKeyword, (newValue) => {
@@ -133,7 +149,7 @@ const handleClick = (item) => {
   </div>
 
   <div v-else key="list" class="home-list-inner">
-  <div v-for="item in BlogList" :key="item" class="contentRouter" @click="handleClick(item)">
+  <div v-for="item in BlogList" :key="item.id" class="contentRouter" @click="handleClick(item)">
     <div style="display: flex; flex-direction: column; width: 85%;">
        <div class="blog-title-container">
         <span v-if="item.isTop" class="top-indicator">置顶</span>

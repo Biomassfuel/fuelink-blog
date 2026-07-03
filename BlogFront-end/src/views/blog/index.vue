@@ -8,6 +8,8 @@ import { useRoute } from 'vue-router'
 import router from '../../router'
 const route = useRoute()
 const cherryInstance = ref(null)
+const contentEl = ref(null)   // 详情卡片根节点，用于监听进场动画结束
+const mdReady = ref(false)    // 正文(Cherry)是否已渲染，用于正文淡入
 const textContent = ref("")
 const previewImageUrl = ref("")
 const isPreviewVisible = ref(false)
@@ -75,31 +77,54 @@ const blogContent = async (id) => {
     viewCount.value = result.data.viewCount
     imageUrl.value = result.data.imageUrl
   }
-  nextTick(() => {
-    if (!cherryInstance.value) {
-      // 只创建一次实例
-      cherryInstance.value = new Cherry({
-        id: 'markdown-container',
-        
-        value: textContent.value,
-        editor: {
-          defaultModel: "previewOnly",
-        },
-        previewer: {
-          enablePreviewerBubble: false,
-          
+  // 延后重型的 Cherry 初始化：它是同步的、会占住主线程，若在挂载即执行会吞掉进场动画。
+  // 等 .content 进场动画结束后再初始化，让开场先顺滑播完。
+  scheduleCherryRender()
+}
 
-        },
-        
-      })
-      // 实例创建后立即设置正确的主题
-      updateCherryTheme()
-      bindMarkdownImagePreview()
-    } else {
-      // 如果实例已存在，更新内容
-      cherryInstance.value.setMarkdown(textContent.value)
-      bindMarkdownImagePreview()
+// 初始化 / 更新 Cherry，并在就绪后触发正文淡入
+const renderCherry = () => {
+  if (!cherryInstance.value) {
+    cherryInstance.value = new Cherry({
+      id: 'markdown-container',
+      value: textContent.value,
+      editor: {
+        defaultModel: "previewOnly",
+      },
+      previewer: {
+        enablePreviewerBubble: false,
+      },
+    })
+    updateCherryTheme()
+    bindMarkdownImagePreview()
+  } else {
+    cherryInstance.value.setMarkdown(textContent.value)
+    bindMarkdownImagePreview()
+  }
+  // 正文渲染完成后淡入（避免"空白→内容"硬跳）
+  nextTick(() => { mdReady.value = true })
+}
+
+// 等 .content 进场动画结束后再渲染 Cherry；带兜底定时器，动画不存在也能触发
+const scheduleCherryRender = () => {
+  if (cherryInstance.value) {
+    renderCherry()
+    return
+  }
+  nextTick(() => {
+    const el = contentEl.value
+    let done = false
+    const run = () => {
+      if (done) return
+      done = true
+      el && el.removeEventListener('animationend', onEnd)
+      renderCherry()
     }
+    const onEnd = (e) => {
+      if (e.target === el) run()   // 只认 .content 自身的进场动画
+    }
+    if (el) el.addEventListener('animationend', onEnd)
+    setTimeout(run, 700)           // 兜底
   })
 }
 
@@ -161,7 +186,7 @@ const goBack = () => {
 }
 </script>
 <template>
-  <div class="content">
+  <div class="content" ref="contentEl" :class="{ 'md-ready': mdReady }">
     <div class="back-btn" @click="goBack">
       <el-icon><ArrowLeft /></el-icon>
       <span>返回</span>
@@ -349,10 +374,49 @@ const goBack = () => {
   margin: 5px 25px 10px 8px;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
   border: 1px solid rgba(255, 255, 255, 0.1);
+  /* 进场：轻微放大 + 上浮 + 淡入，沉稳落位。backwards 填充 → 结束不残留 transform，
+     以免困住内部 position:fixed 的图片预览遮罩 */
+  animation: article-in 0.45s cubic-bezier(0.22, 0.61, 0.36, 1) backwards;
+  transform-origin: top center;
+  will-change: transform, opacity;
   /* display: flex; */
   /* flex-direction: column; */
   /* justify-content: space-between; */
 
+}
+
+@keyframes article-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 正文体：进场时先留白，Cherry 就绪后淡入，避免"空白→内容"硬跳 */
+#markdown-container {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+.content.md-ready #markdown-container {
+  opacity: 1;
+}
+
+/* 减少动效偏好：退化为简单淡入，正文直接显示 */
+@media (prefers-reduced-motion: reduce) {
+  .content {
+    animation: article-fade 0.3s ease backwards;
+  }
+  #markdown-container {
+    transition: none;
+  }
+}
+@keyframes article-fade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* 明亮模式样式 */
